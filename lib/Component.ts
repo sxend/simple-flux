@@ -1,56 +1,52 @@
 import {Action} from './Action';
 import {Store} from './Store';
 import {Configuration} from './Configuration';
-import nano from './nano';
+import {TemplateUtils} from './TemplateUtils';
 import {DomUtils} from './DomUtils';
+import {ObjectUtils} from './ObjectUtils';
 
 export class Component {
   private config: Configuration;
   private action: Action;
   private store: Store;
-  private parent: HTMLElement;
-  private markers: { [position: number]: HTMLElement };
-  private fetchButton: HTMLElement;
+  private root: HTMLElement;
+  private markers: { [position: number]: HTMLElement } = {};
   private rendered: { [position: number]: any } = [];
   constructor(config: Configuration, action: Action, store: Store) {
     this.config = config;
     this.action = action;
     this.store = store;
-    this.store.onUpdate(() => this.render());
   }
   attach() {
-    this.parent = <HTMLElement>document.querySelector(this.config.selector);
-    this.markers = Object['assign'].apply(Object, [{}].concat(this.config.position.map(position => {
-      return { [position]: this.parent.children[position] };
-    })));
-    this.fetchButton = <HTMLElement>this.parent.querySelector(".action-fetch");
-    this.fetchButton.onclick = () => this.action.fetch();
+    this.initialize();
+    this.store.onUpdate(this.render.bind(this));
     this.action.fetch();
   }
-  private render() {
-    var data = this.store.getData();
-    if (data.length > this.config.position.length) {
-      return;
+  private initialize() {
+    this.root = <HTMLElement>document.querySelector(this.config.selector);
+    for (var position of this.config.position) {
+      this.markers[position] = <HTMLElement>this.root.children[position];
     }
-    data.forEach((value, index) => {
-      var position = Number(Object.keys(this.markers)[index]);
-      if (Object.keys(this.rendered).indexOf(String(position)) >= 0) {
-        return;
+  }
+  private render() {
+    var texts = this.store.getTexts();
+    for (var index in texts) {
+      var text = texts[index];
+      var position = this.config.position[index];
+      if (!!this.rendered[position]) {
+        continue;
       }
-      var html = this.compileTemplate(value);
-      var element = DomUtils.createDomFromString(html);
+      var htmlString = TemplateUtils.compile(this.config.template, text);
+      var element = DomUtils.createElementFromString(htmlString);
       this.insertElement(element, this.markers[position]);
-      this.rendered[position] = value;
-    });
+      this.rendered[position] = text;
+    }
   }
   private insertElement(element: Node, after?: HTMLElement) {
     if (after) {
-      this.parent.insertBefore(element, after);
+      this.root.insertBefore(element, after);
     } else {
-      this.parent.appendChild(element);
+      this.root.appendChild(element);
     }
-  }
-  private compileTemplate(data) {
-    return nano(this.config.template, data);
   }
 }

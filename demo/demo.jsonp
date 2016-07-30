@@ -1,9 +1,13 @@
 (function() {
+  window.counter = (window.counter || 0) + 1;
+
   var script = document.currentScript;
   var cbName = script.src.split('=')[1];
   window[cbName]({
-    data: [{
-      text: "text. ts: " + Date.now()
+    texts: [{
+      value: window.counter + " text. ts: " + Date.now()
+    }, {
+      value: window.counter + " text. ts: " + Date.now()
     }]
   });
 })();

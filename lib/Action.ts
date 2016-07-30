@@ -10,8 +10,8 @@ export class Action {
     var id = idgen();
     var callback = 'callback_' + id;
     var url = '//localhost:9000/demo/demo.jsonp?callback=' + callback;
-    window[callback] = (payload) => {
-      this.dispatcher.dispatch("Fetched", payload);
+    window[callback] = (data) => {
+      this.dispatcher.dispatch("Fetched", data);
     };
     var script = document.createElement('script');
     script.async = true;
