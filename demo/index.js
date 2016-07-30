@@ -8,7 +8,7 @@
       position: [
         0, 2, 4
       ],
-      template: "<li>{value}</li>"
+      template: "<li>{text}</li>"
     });
     component.attach();
   };
