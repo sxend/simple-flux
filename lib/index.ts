@@ -1,3 +1,3 @@
-import {app} from './app';
+import {App} from './App';
 
-window["$PLACE_HOLDER$"] = app;
+window['Flux'] = App;
