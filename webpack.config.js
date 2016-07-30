@@ -3,18 +3,18 @@ let webpack = require('webpack');
 
 module.exports = {
   context: __dirname + "/lib",
-  entry: "./index.js",
+  entry: "./index.ts",
   output: {
     path: __dirname + "/dist",
     filename: "bundle.js"
   },
   resolve: {
-    extensions: ['', '.js', '.html']
+    extensions: ['', '.ts', '.html']
   },
   module: {
     loaders: [{
-      test: /\.js$/,
-      loader: "babel"
+      test: /\.ts$/,
+      loader: "ts-loader"
     }, {
       test: /\html$/,
       loader: "html"
