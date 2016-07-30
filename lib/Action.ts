@@ -8,13 +8,10 @@ export class Action {
   }
   fetch() {
     var id = idgen();
-    var cb = 'callback_' + id;
-    var url = '//localhost:9000/demo/demo.jsonp?callback=' + cb;
-    window[cb] = (data) => {
-      this.dispatcher.dispatch({
-        actionType: "Fetched",
-        data: data.data
-      });
+    var callback = 'callback_' + id;
+    var url = '//localhost:9000/demo/demo.jsonp?callback=' + callback;
+    window[callback] = (payload) => {
+      this.dispatcher.dispatch("Fetched", payload);
     };
     var script = document.createElement('script');
     script.async = true;

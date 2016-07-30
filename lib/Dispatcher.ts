@@ -1,19 +1,13 @@
 import idgen from './idgen';
 
 export class Dispatcher {
-  private callbacks: { [id: string]: Function } = {};
+  private callbacks: {[name: string]: Function[]} = {};
 
-  register(callback: Function): string {
-    var id = idgen();
-    this.callbacks[id] = callback;
-    return id;
+  register(name: string, callback: Function) {
+    if(!this.callbacks[name]) this.callbacks[name] = [];
+    this.callbacks[name].push(callback);
   }
-  unregister(id: string): void {
-    delete this.callbacks[id];
-  }
-  dispatch(payload: any): void {
-    Object.keys(this.callbacks).forEach(id => {
-      this.callbacks[id](payload, id);
-    });
+  dispatch(name: string, payload?: any) {
+    if(this.callbacks[name]) this.callbacks[name].forEach(callback => callback(payload));
   }
 }

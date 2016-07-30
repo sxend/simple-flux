@@ -1,18 +1,20 @@
-import {EventEmitter} from './EventEmitter';
 import {Dispatcher} from './Dispatcher';
 
-export class Store extends EventEmitter {
+export class Store extends Dispatcher {
   private dispatcher: Dispatcher;
+  private data: any[] = [];
   constructor(dispatcher: Dispatcher) {
     super();
     this.dispatcher = dispatcher;
-    this.dispatcher.register((payload) => {
-      if (payload.actionType === "Fetched") {
-        this.emit("Fetched", payload.data);
-      }
+    this.dispatcher.register("Fetched", (payload) => {
+      this.data = this.data.concat(payload.data);
+      this.dispatch("Update");
     });
   }
-  onFetched(f) {
-    this.on("Fetched", f);
+  onUpdate(callback: Function) {
+    this.register("Update", callback);
+  }
+  getData() {
+    return this.data;
   }
 }

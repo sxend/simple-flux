@@ -3,11 +3,7 @@
   var cbName = script.src.split('=')[1];
   window[cbName]({
     data: [{
-      text: "text1"
-    }, {
-      text: "text2"
-    }, {
-      text: "text3"
+      text: "text. ts: " + Date.now()
     }]
   });
 })();
