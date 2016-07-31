@@ -51,12 +51,7 @@ export class Component {
     this.isAttached = false;
   }
   private onRootChange(mutations: MutationRecord[], observer: MutationObserver): void {
-    for(var mutation of mutations) {
-      var element = mutation.addedNodes[0];
-      if(!element['__isInserted']) {
-        console.log(mutation);
-      }
-    }
+    console.log("onRootChange is not implemented");
   }
   private render() {
     var texts = this.store.getTexts();
