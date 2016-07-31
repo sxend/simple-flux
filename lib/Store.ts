@@ -10,6 +10,10 @@ export class Store extends Dispatcher {
       this.texts = this.texts.concat(data.texts);
       this.dispatch("Update");
     });
+    this.dispatcher.register("Clear", () => {
+      this.texts = [];
+      this.dispatch("Update");
+    });
   }
   onUpdate(callback: Function) {
     this.register("Update", callback);

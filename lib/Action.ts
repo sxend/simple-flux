@@ -18,4 +18,7 @@ export class Action {
     script.src = url;
     document.body.appendChild(script);
   }
+  clear() {
+    this.dispatcher.dispatch("Clear");
+  }
 }

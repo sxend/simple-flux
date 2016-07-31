@@ -11,9 +11,16 @@
       interval: 2,
       template: "<li>{value}</li>"
     });
-    component.attach();
 
     var parent = document.querySelector('#main-content > ul.parent-area');
+    var attachBtn = document.querySelector('#btn-attach');
+    attachBtn.onclick = function() {
+      component.attach();
+    };
+    var detachBtn = document.querySelector('#btn-detach');
+    detachBtn.onclick = function() {
+      component.detach();
+    };
     var addElementBtn = document.querySelector('#btn-add-element');
     addElementBtn.onclick = function() {
       var element = document.createElement('li');

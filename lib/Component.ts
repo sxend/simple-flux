@@ -9,23 +9,53 @@ export class Component {
   private config: Configuration;
   private action: Action;
   private store: Store;
+  private isAttached: boolean = false;
   private root: HTMLElement;
+  private observer: MutationObserver;
   private markers: { [position: number]: HTMLElement } = {};
-  private rendered: { [position: number]: any } = [];
+  private rendered: { [position: number]: any } = {};
   constructor(config: Configuration, action: Action, store: Store) {
     this.config = config;
     this.action = action;
     this.store = store;
   }
   attach() {
-    this.initialize();
-    this.store.onUpdate(this.render.bind(this));
-    this.action.fetch();
-  }
-  private initialize() {
+    if(this.isAttached) {
+      return;
+    }
     this.root = <HTMLElement>document.querySelector(this.config.selector);
     for (var position of this.config.position) {
       this.markers[position] = <HTMLElement>this.root.children[position];
+    }
+    this.observer = new MutationObserver(this.onRootChange);
+    this.observer.observe(this.root, {
+      childList: true
+    });
+    this.store.onUpdate(this.render.bind(this));
+    this.action.fetch();
+    this.isAttached = true;
+  }
+  detach() {
+    if(!this.isAttached) {
+      return;
+    }
+    this.root = null;
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.observer = null;
+    this.markers = {};
+    Object.keys(this.rendered).forEach(position => this.rendered[position].element.remove());
+    this.rendered = {};
+    this.action.clear();
+    this.isAttached = false;
+  }
+  private onRootChange(mutations: MutationRecord[], observer: MutationObserver): void {
+    for(var mutation of mutations) {
+      var element = mutation.addedNodes[0];
+      if(!element['__isInserted']) {
+        console.log(mutation);
+      }
     }
   }
   private render() {
@@ -38,8 +68,12 @@ export class Component {
       }
       var htmlString = TemplateUtils.compile(this.config.template, text);
       var element = DomUtils.createElementFromString(htmlString);
+      element['__isInserted'] = true;
       this.insertElement(element, this.markers[position]);
-      this.rendered[position] = text;
+      this.rendered[position] = {
+        element: element,
+        text: text
+      };
     }
   }
   private insertElement(element: Node, after?: HTMLElement) {
